@@ -1,0 +1,34 @@
+# tensorflow中卷积神经网络的相关函数
+
+# 卷积函数
+    - 卷积函数定义在tensorflow/python/ops下的nn_impl.py和nn_ops.py文件中，包括很多卷积函数
+    - 常用的二维卷积函数（其他卷积函数的使用方法与二维卷积大致相同）
+        - tf.nn.conv2d(input,filter,strides,padding,use_cudnn_on_gpu=None,name=None)
+            - input:需要做卷积的输入数据
+                - 注意：这是一个4维张量（[batch,in_height,in_width,in_channels]）,要求类型为float32或float64
+                    - batch表示这一批样本中样本的个数，中间两个表示图像的尺寸，最后一个表示通道数（灰度图像1，彩色图像3）
+            - filter:卷积核，参数为[filter_height,filter_width,in_channels,out_channels]
+                - 前两个参数表示图像的尺寸
+                - 后两个参数表示输入和输出的通道数
+            - strides: 图像每一维的步长，是一个一维向量，长度为4
+            - padding：定义元素边框与元素内容之间的空间，只有两个值SAME或VALID（决定不同的卷积方式）
+                - SAME表示边缘填充，适用于全尺寸操作
+                - VALID表示边缘不填充
+            - use_cudnn_on_gpu: bool类型，表示是否需要用cudnn加速
+            - name: 定义该操作的名称
+            - 返回值：返回一个tensor, 也就是feature map(特征映射图)
+        - tf.nn.depthwise_conv2d(input,filter,strides,padding,name=None)
+        - tf.nn.separable_conv2d(input,depthwise_filter,pointwise_filter,strides,padding,name=None)
+        - 等等
+
+# 池化函数
+    - 池化函数定义在tensorflow/python/ops下的nn.py和gen_nn_ops.py文件中
+        - 最大池化：tf.nn.max_pool(value,ksize,strides,padding,name=None)
+        - 平均池化：tf.nn.avg_pool(value,ksize,strides,padding,name=None)
+    - 参数
+        - value:需要池化的输入。一般池化层连接在卷积层之后，所以输入通常是conv2d所输出的feature-map，仍然是一个4维张量（[batch,height,width,channels]）
+        - ksize:池化窗口大小，由于一般不在batch和channels上做池化，所以ksize一般是[1,height,width,1]
+        - strides:图像每一维的步长，是一个一维向量，长度为4
+        - padding:和卷积函数中的padding参数含义一样
+        - name：该操作的名称
+        - 返回值：返回一个tensor
